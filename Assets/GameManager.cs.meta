@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: fc9e192bc9e29b543986d528a22b2f2c
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - compileErrorPrefab: {fileID: 6308328918428129654, guid: 85ec0269e48327c4791ca16fa022c570, type: 3}
+  - reportBugPrefab: {fileID: 6308328918428129654, guid: 0b38edec1b8b9ff4b892acf78d31991b, type: 3}
+  - prototypePrefab: {instanceID: 0}
+  - energyDrinkPrefab: {instanceID: 0}
+  - cheatSheetPrefab: {instanceID: 0}
+  - brokenKeyboardPrefab: {instanceID: 0}
+  - timerText: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

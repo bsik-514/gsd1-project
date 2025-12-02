@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,28 +7,38 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    [Header("±âº» ¼³Á¤")]
-    public int currentFloor = 4; // ÇöÀç Ãş (4ÃşºÎÅÍ ½ÃÀÛ)
+    [Header("ê¸°ë³¸ ì„¤ì •")]
+    public int currentFloor = 5; // 5ì¸µ(1í•™ë…„) ì‹œì‘
     public Vector2 spawnAreaMin = new Vector2(-10, -10);
     public Vector2 spawnAreaMax = new Vector2(10, 10);
 
-    [Header("¸ó½ºÅÍ ÇÁ¸®ÆÕ")]
-    public GameObject compileErrorPrefab;   // ÄÄÆÄÀÏ ¿¡·¯
-    public GameObject reportBugPrefab;      // ¸®Æ÷Æ® ¹ö±×
-    public GameObject prototypePrefab;      // ÇÁ·ÎÅäÅ¸ÀÔ
-    public GameObject professorBossPrefab;  // [Ãß°¡µÊ] ±³¼ö´Ô º¸½º
+    [Header("ëª¬ìŠ¤í„° í”„ë¦¬íŒ¹ (ì¡ëª¹)")]
+    public GameObject weakEnemyPrefab;    // 1í•™ë…„/êµ°ëŒ€ ì¡ëª¹
+    public GameObject normalEnemyPrefab;  // 2,3í•™ë…„ ì¡ëª¹
+    public GameObject rangedEnemyPrefab;  // ì›ê±°ë¦¬ ì¡ëª¹
 
-    [Header("¾ÆÀÌÅÛ ÇÁ¸®ÆÕ")]
+    [Header("ë³´ìŠ¤ í”„ë¦¬íŒ¹ (ê³¼ëª©)")]
+    public GameObject bossJava;       // 1í•™ë…„ ë³´ìŠ¤ (ìë°”)
+    public GameObject bossArmy;       // 4ì¸µ ë³´ìŠ¤ (ì „ì—­ì¦)
+    public GameObject bossAlgo;       // 2í•™ë…„ ë³´ìŠ¤ (ì•Œê³ ë¦¬ì¦˜)
+    public GameObject bossOS;         // 3í•™ë…„ ë³´ìŠ¤ (ìš´ì˜ì²´ì œ)
+    public GameObject bossGrad;       // 4í•™ë…„ ë³´ìŠ¤ (ì¡¸ì—…ì‘í’ˆ)
+
+    [Header("ì•„ì´í…œ í”„ë¦¬íŒ¹")]
     public GameObject energyDrinkPrefab;
     public GameObject cheatSheetPrefab;
     public GameObject brokenKeyboardPrefab;
 
-    [Header("UI ¹× Å¸ÀÌ¸Ó")]
-    public float stageTimeLimit = 60.0f; // 1ºĞ ¹öÆ¼±â
+    [Header("UI ë° ì—°ì¶œ")]
     public Text timerText;
+    public Text floorText; // ë²½ì— ë¶™ì€ ì¸µìˆ˜ í…ìŠ¤íŠ¸
+    public RectTransform leftDoor;  // ì™¼ìª½ ë¬¸ UI
+    public RectTransform rightDoor; // ì˜¤ë¥¸ìª½ ë¬¸ UI
 
+    // ë‚´ë¶€ ë³€ìˆ˜
     private float currentTimer;
     private bool isTimerRunning = false;
+    private bool isBossSpawned = false;
 
     void Awake()
     {
@@ -38,7 +48,24 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        StartStage(4); // °ÔÀÓ ½ÃÀÛ ½Ã 4ÃşºÎÅÍ
+        // ê²Œì„ ì‹œì‘ ì‹œ ì—°ì¶œê³¼ í•¨ê»˜ ì‹œì‘
+        StartCoroutine(StartGameTransition());
+    }
+
+    // ê²Œì„ ì²˜ìŒ ì¼¤ ë•Œ ë¬¸ ì—´ë¦¬ëŠ” ì—°ì¶œ
+    IEnumerator StartGameTransition()
+    {
+        // 1. ë¬¸ì„ ë‹«ì€ ìƒíƒœë¡œ ì‹œì‘ (í™”ë©´ ê°€ë¦¼)
+        leftDoor.anchoredPosition = new Vector2(0, 0);
+        rightDoor.anchoredPosition = new Vector2(0, 0);
+
+        yield return new WaitForSeconds(1.0f); // 1ì´ˆ ëŒ€ê¸°
+
+        // 2. ë¬¸ ì—´ê¸° (ê²Œì„ í™”ë©´ ë“±ì¥)
+        yield return StartCoroutine(AnimateDoors(false));
+
+        // 3. 5ì¸µ ìŠ¤í…Œì´ì§€ ì‹œì‘
+        StartStage(5);
     }
 
     void Update()
@@ -47,96 +74,193 @@ public class GameManager : MonoBehaviour
         {
             if (currentTimer > 0)
             {
-                currentTimer -= Time.deltaTime;
-                if (timerText != null) UpdateTimerUI(currentTimer);
+                // [ìˆ˜ì •] 4ì¸µ(êµ°ëŒ€)ë§Œì˜ íŠ¹ë³„í•œ ì‹œê°„ íë¦„ (êµ­ë°©ë¶€ ì‹œê³„)
+                float timeMultiplier = 1.0f; // ê¸°ë³¸ì€ 1ë°°ì†
+
+                if (currentFloor == 4)
+                {
+                    timeMultiplier = 0.5f; // 4ì¸µì€ ì‹œê°„ì´ 0.5ë°°ì†ìœ¼ë¡œ íë¦„ (2ë°° ëŠë¦¬ê²Œ ê°)
+                }
+
+                // deltaTimeì— ë°°ìœ¨ì„ ê³±í•´ì„œ ì‹œê°„ì„ ê¹ìŒ
+                currentTimer -= Time.deltaTime * timeMultiplier;
+
+                UpdateTimerUI(currentTimer);
+
+                // [ë£°] 60ì´ˆ ë‚¨ì•˜ì„ ë•Œ ë³´ìŠ¤ ë“±ì¥
+                if (currentTimer <= 60.0f && !isBossSpawned)
+                {
+                    SpawnBossByFloor(currentFloor);
+                    isBossSpawned = true;
+
+                    if (currentFloor == 4) Debug.Log("í–‰ë³´ê´€(ë³´ìŠ¤) ë“±ì¥! ì „ì—­ì€ ë©€ì—ˆë‹¤...");
+                }
             }
             else
             {
-                // ½Ã°£ Á¾·á! (½ºÅ×ÀÌÁö Å¬¸®¾î)
+                // ì‹œê°„ ì¢…ë£Œ -> ë‹¤ìŒ ì¸µìœ¼ë¡œ ì´ë™
                 currentTimer = 0;
                 isTimerRunning = false;
-                if (timerText != null) UpdateTimerUI(0);
-
-                StartCoroutine(StageClearProcess());
+                StartCoroutine(NextStageProcess());
             }
         }
     }
 
-    // --- ½ºÅ×ÀÌÁö ½ÃÀÛ ÇÔ¼ö ---
     void StartStage(int floor)
     {
         currentFloor = floor;
-        Debug.Log(currentFloor + "Ãş ½ÃÀÛ!");
-
-        // 1. Å¸ÀÌ¸Ó ¸®¼Â
-        currentTimer = stageTimeLimit;
+        isBossSpawned = false;
+        currentTimer = 120.0f; // 2ë¶„ (1ë¶„ ì¡ëª¹ + 1ë¶„ ë³´ìŠ¤)
         isTimerRunning = true;
 
-        // 2. Ãşº° ¸ó½ºÅÍ/¾ÆÀÌÅÛ ½ºÆù ·ÎÁ÷
-        if (floor == 4)
-        {
-            // [4Ãş] ÄÄÆÄÀÏ ¿¡·¯ ¶¼°ÅÁö
-            SpawnEnemy(compileErrorPrefab, 30);
+        // UI ê°±ì‹ 
+        if (floorText != null) floorText.text = floor + "F";
+        Debug.Log(floor + "ì¸µ ì‹œì‘! (í…Œë§ˆ: " + GetFloorTheme(floor) + ")");
 
-            // ¾ÆÀÌÅÛ ¼Ò·® Áö¿ø
+        // --- ì¸µë³„ ì¡ëª¹ ìŠ¤í° ë¡œì§ ---
+        if (floor == 5) // 1í•™ë…„ (ìë°”)
+        {
+            SpawnEnemy(weakEnemyPrefab, 20);
             SpawnItem(energyDrinkPrefab, 1);
         }
-        else if (floor == 3)
+        else if (floor == 4) // êµ°ëŒ€ (ì „ì—­ì¦)
         {
-            // [3Ãş] ÄÄÆÄÀÏ ¿¡·¯ + ¸®Æ÷Æ® ¹ö±× + ÇÁ·ÎÅäÅ¸ÀÔ(¼Ò¼ö)
-            SpawnEnemy(compileErrorPrefab, 20);
-            SpawnEnemy(reportBugPrefab, 15);
-            SpawnEnemy(prototypePrefab, 3);
-
-            // ¾ÆÀÌÅÛ Áö¿ø
-            SpawnItem(energyDrinkPrefab, 2);
+            SpawnEnemy(weakEnemyPrefab, 15); // êµ°ì¸ ëŠë‚Œ
+            SpawnEnemy(normalEnemyPrefab, 15);
             SpawnItem(cheatSheetPrefab, 1);
+        }
+        else if (floor == 3) // 2í•™ë…„ (ì•Œê³ ë¦¬ì¦˜)
+        {
+            SpawnEnemy(normalEnemyPrefab, 20);
+            SpawnEnemy(rangedEnemyPrefab, 5);
+            SpawnItem(energyDrinkPrefab, 2);
+        }
+        else if (floor == 2) // 3í•™ë…„ (ìš´ì˜ì²´ì œ)
+        {
+            SpawnEnemy(normalEnemyPrefab, 20);
+            SpawnEnemy(rangedEnemyPrefab, 10);
             SpawnItem(brokenKeyboardPrefab, 1);
         }
-        else if (floor == 2)
+        else if (floor == 1) // 4í•™ë…„ (ì¡¸ì—…ì‘í’ˆ)
         {
-            // [2Ãş] ±³¼ö´Ô µîÀå! (º¸½ºÀü)
-            Debug.Log("±³¼ö´Ô ÃâÇö!");
+            SpawnEnemy(weakEnemyPrefab, 20);
+            SpawnEnemy(normalEnemyPrefab, 20);
+            SpawnEnemy(rangedEnemyPrefab, 20);
 
-            // ±³¼ö´Ô 1¸í ½ºÆù
-            SpawnEnemy(professorBossPrefab, 1);
-
-            // ºÎÇÏµéµµ °°ÀÌ ³ª¿È
-            SpawnEnemy(reportBugPrefab, 10);
-            SpawnEnemy(prototypePrefab, 5);
-
-            // º¸½ºÀüÀÌ¶ó ¾ÆÀÌÅÛ ¸¹ÀÌ ÁÜ
-            SpawnItem(energyDrinkPrefab, 2);
+            SpawnItem(energyDrinkPrefab, 3);
             SpawnItem(cheatSheetPrefab, 2);
-            SpawnItem(brokenKeyboardPrefab, 1);
+            SpawnItem(brokenKeyboardPrefab, 2);
         }
     }
 
-    // --- ½ºÅ×ÀÌÁö Å¬¸®¾î Ã³¸® (¿¤¸®º£ÀÌÅÍ) ---
-    IEnumerator StageClearProcess()
+    // ì¸µë³„ ë³´ìŠ¤ ì†Œí™˜
+    void SpawnBossByFloor(int floor)
     {
-        Debug.Log("¿¤¸®º£ÀÌÅÍ Å¾½Â Áß... (Àá½Ã ´ë±â)");
+        Debug.Log("âš ï¸ ë³´ìŠ¤ ì¶œí˜„! : " + GetFloorTheme(floor));
+        GameObject bossToSpawn = null;
 
-        // 1. È­¸é Ã»¼Ò
-        ClearAllObjects();
-
-        // 2. 3ÃÊ ´ë±â
-        yield return new WaitForSeconds(3.0f);
-
-        // 3. ´ÙÀ½ Ãş ÀÌµ¿
-        int nextFloor = currentFloor - 1;
-        if (nextFloor >= 1) // 1Ãş±îÁö¸¸
+        switch (floor)
         {
+            case 5: bossToSpawn = bossJava; break;
+            case 4: bossToSpawn = bossArmy; break;
+            case 3: bossToSpawn = bossAlgo; break;
+            case 2: bossToSpawn = bossOS; break;
+            case 1: bossToSpawn = bossGrad; break;
+        }
+
+        if (bossToSpawn != null)
+        {
+            SpawnEnemy(bossToSpawn, 1);
+        }
+
+        // ë³´ìŠ¤ ë‚˜ì˜¬ ë•Œ ì¡ëª¹ ì¦ì›
+        SpawnEnemy(weakEnemyPrefab, 5);
+    }
+
+    // --- ìŠ¤í…Œì´ì§€ ì´ë™ ì—°ì¶œ (ë¬¸ ë‹«í˜ -> ì´ë™ -> ë¬¸ ì—´ë¦¼) ---
+    IEnumerator NextStageProcess()
+    {
+        Debug.Log("ì‹œí—˜ ì¢…ë£Œ! ë¬¸ì´ ë‹«í™ë‹ˆë‹¤.");
+
+        // 1. ë¬¸ ë‹«ê¸° (í™”ë©´ ê°€ë¦¼)
+        yield return StartCoroutine(AnimateDoors(true));
+
+        // 2. í™”ë©´ ê°€ë ¤ì§„ ë™ì•ˆ ì²­ì†Œ & ì¤€ë¹„
+        ClearAllObjects();
+        yield return new WaitForSeconds(1.0f); // ì ì‹œ ëŒ€ê¸° 
+
+        int nextFloor = currentFloor - 1;
+
+        if (nextFloor >= 1)
+        {
+            // 3. ë‹¤ìŒ ì¸µ ë°ì´í„° ë¡œë“œ
             StartStage(nextFloor);
+
+            // í”Œë ˆì´ì–´ ìœ„ì¹˜ ì¤‘ì•™ìœ¼ë¡œ ì´ˆê¸°í™” (ì„ íƒì‚¬í•­)
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null) player.transform.position = Vector3.zero;
+
+            // 4. ë¬¸ ì—´ê¸° (ì§ ! í•˜ê³  ìƒˆ ìŠ¤í…Œì´ì§€ ë“±ì¥)
+            yield return StartCoroutine(AnimateDoors(false));
         }
         else
         {
-            Debug.Log("ÃàÇÏÇÕ´Ï´Ù! °øÇĞ°ü Å»Ãâ ¼º°ø!");
-            Time.timeScale = 0f; // °ÔÀÓ Á¾·á
+            Debug.Log("ì¡¸ì—… ì¶•í•˜í•©ë‹ˆë‹¤!");
+            // ì—”ë”© ì²˜ë¦¬ (ì—¬ê¸°ì„  ì¼ë‹¨ ì •ì§€)
+            Time.timeScale = 0f;
         }
     }
 
-    // --- À¯Æ¿¸®Æ¼ ÇÔ¼öµé ---
+    // ë¬¸ ì—´ê³  ë‹«ëŠ” ì• ë‹ˆë©”ì´ì…˜ (ìˆ˜ì •ëœ ë²„ì „)
+    IEnumerator AnimateDoors(bool isClosing)
+    {
+        float timer = 0f;
+        float duration = 1.0f; // 1ì´ˆ ë™ì•ˆ ì´ë™
+
+        // ì™¼ìª½ ë¬¸: ë‹«íˆë©´ X=0, ì—´ë¦¬ë©´ X=-ë„ˆë¹„ (ì™¼ìª½ìœ¼ë¡œ ìˆ¨ìŒ)
+        // (Left Doorì˜ Pivotì´ X=0ì¼ ê²½ìš°ë¥¼ ê°€ì •. ë§Œì•½ Pivotì´ X=1ì´ë©´ ë°˜ëŒ€ë¡œ ê³„ì‚°í•´ì•¼ í•¨)
+        // ì•„ê¹Œ ì¶”ì²œë“œë¦° ì„¤ì •(Left Pivot X=0, Right Pivot X=1) ê¸°ì¤€ì…ë‹ˆë‹¤.
+        float leftTargetX = isClosing ? 0f : -leftDoor.rect.width;
+
+        // ì˜¤ë¥¸ìª½ ë¬¸: ë‹«íˆë©´ X=0, ì—´ë¦¬ë©´ X=ë„ˆë¹„ (ì˜¤ë¥¸ìª½ìœ¼ë¡œ ìˆ¨ìŒ)
+        float rightTargetX = isClosing ? 0f : rightDoor.rect.width;
+
+        // í˜„ì¬ ìœ„ì¹˜ ê¸°ì–µ
+        Vector2 leftStart = leftDoor.anchoredPosition;
+        Vector2 rightStart = rightDoor.anchoredPosition;
+
+        Vector2 leftEnd = new Vector2(leftTargetX, leftStart.y);
+        Vector2 rightEnd = new Vector2(rightTargetX, rightStart.y);
+
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+            float t = timer / duration;
+
+            // ë¶€ë“œëŸ½ê²Œ ì´ë™
+            leftDoor.anchoredPosition = Vector2.Lerp(leftStart, leftEnd, t);
+            rightDoor.anchoredPosition = Vector2.Lerp(rightStart, rightEnd, t);
+
+            yield return null;
+        }
+
+        leftDoor.anchoredPosition = leftEnd;
+        rightDoor.anchoredPosition = rightEnd;
+    }
+
+    // --- ìœ í‹¸ë¦¬í‹° ---
+    string GetFloorTheme(int floor)
+    {
+        switch (floor)
+        {
+            case 5: return "ìë°”(1í•™ë…„)";
+            case 4: return "ì „ì—­ì¦(êµ°ëŒ€)";
+            case 3: return "ì•Œê³ ë¦¬ì¦˜(2í•™ë…„)";
+            case 2: return "ìš´ì˜ì²´ì œ(3í•™ë…„)";
+            case 1: return "ì¡¸ì—…ì‘í’ˆ(4í•™ë…„)";
+            default: return "";
+        }
+    }
 
     void SpawnEnemy(GameObject prefab, int count)
     {
@@ -162,8 +286,6 @@ public class GameManager : MonoBehaviour
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         foreach (GameObject obj in enemies) Destroy(obj);
-
-        // (¾ÆÀÌÅÛµµ Áö¿ì·Á¸é ÅÂ±× ¼³Á¤ ÇÊ¿ä)
     }
 
     Vector2 GetRandomPosition()
@@ -171,18 +293,23 @@ public class GameManager : MonoBehaviour
         Vector2 spawnPos = Vector2.zero;
         bool isSafe = false;
         int attempts = 0;
-
         while (!isSafe && attempts < 100)
         {
-            float spawnX = Random.Range(spawnAreaMin.x, spawnAreaMax.x);
-            float spawnY = Random.Range(spawnAreaMin.y, spawnAreaMax.y);
-            spawnPos = new Vector2(spawnX, spawnY);
-
-            // ÇÃ·¹ÀÌ¾î(0,0)¿Í 5¹ÌÅÍ ÀÌ»ó °Å¸®µÎ±â
+            float x = Random.Range(spawnAreaMin.x, spawnAreaMax.x);
+            float y = Random.Range(spawnAreaMin.y, spawnAreaMax.y);
+            spawnPos = new Vector2(x, y);
             if (Vector2.Distance(spawnPos, Vector2.zero) > 5.0f) isSafe = true;
             attempts++;
         }
         return spawnPos;
+    }
+
+    void UpdateTimerUI(float time)
+    {
+        if (time < 0) time = 0;
+        float m = Mathf.FloorToInt(time / 60);
+        float s = Mathf.FloorToInt(time % 60);
+        if (timerText != null) timerText.text = string.Format("{0:00}:{1:00}", m, s);
     }
 
     public void FreezeEnemies(float duration)
@@ -190,24 +317,13 @@ public class GameManager : MonoBehaviour
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         foreach (GameObject enemy in enemies)
         {
-            // ¸ó½ºÅÍ Á¾·ù°¡ ´Ù¾çÇØÁ³À¸´Ï, °¢ ½ºÅ©¸³Æ®¸¦ È®ÀÎÇØ¼­ Freeze È£Ãâ
+            var script = enemy.GetComponent<Enemy_CompileError>();
+            if (script != null) script.Freeze(duration);
 
-            // 1. ÄÄÆÄÀÏ ¿¡·¯
-            var script1 = enemy.GetComponent<Enemy_CompileError>();
-            if (script1 != null) script1.Freeze(duration);
+            var script2 = enemy.GetComponent<Enemy_Boss>();
+            if (script2 != null) script2.Freeze(duration);
 
-            // 2. (Ãß°¡) ÇÁ·ÎÅäÅ¸ÀÔÀÌ³ª º¸½º µî ´Ù¸¥ Àû¿¡°Ôµµ Freeze°¡ ÀÖ´Ù¸é È£Ãâ
-            // (ÀÏ´ÜÀº ÄÄÆÄÀÏ ¿¡·¯¸¸ ¸ØÃßµµ·Ï µÒ, ÇÊ¿äÇÏ¸é ¾Æ·¡ ÁÖ¼® ÇØÁ¦)
-            // var script2 = enemy.GetComponent<Enemy_Boss>();
-            // if (script2 != null) script2.Freeze(duration);
+            // í”„ë¡œí† íƒ€ì… ë“± ë‹¤ë¥¸ ì  ìŠ¤í¬ë¦½íŠ¸ë„ ìˆë‹¤ë©´ ì—¬ê¸°ì„œ í˜¸ì¶œ
         }
-    }
-
-    void UpdateTimerUI(float timeToDisplay)
-    {
-        if (timeToDisplay < 0) timeToDisplay = 0;
-        float minutes = Mathf.FloorToInt(timeToDisplay / 60);
-        float seconds = Mathf.FloorToInt(timeToDisplay % 60);
-        timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
     }
 }

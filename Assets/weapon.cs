@@ -6,7 +6,7 @@ public class Weapon : MonoBehaviour
 {
     [Header("무기 설정")]
     public GameObject projectilePrefab; // 발사체 프리팹
-    public float fireRate = 0.7f;       // 발사 속도
+    public float fireRate = 1.4f;       // 발사 속도
     public int projectileCount = 1;     // 발사체 개수
     public float attackRange = 6.0f;    // [추가] 공격 인식 범위 (이 안의 적만 공격)
 

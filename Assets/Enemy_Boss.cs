@@ -33,6 +33,11 @@ public class Enemy_Boss : MonoBehaviour
         // 1. 플레이어를 향해 천천히 이동
         Vector2 direction = (playerTarget.position - transform.position).normalized;
         transform.Translate(direction * moveSpeed * Time.deltaTime);
+        //방향
+        if (direction.x > 0)
+            sp.flipX = true;
+        else if (direction.x < 0)
+            sp.flipX = false;
 
         // 2. 공격 타이머
         fireTimer += Time.deltaTime;

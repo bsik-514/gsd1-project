@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float moveSpeed = 5.0f;
-    public int life = 3;
+    public int life = 10;
 
     private Rigidbody2D rb;
     private Weapon weapon;
@@ -24,6 +24,11 @@ public class PlayerController : MonoBehaviour
     {
         float moveX = Input.GetAxisRaw("Horizontal");
         float moveY = Input.GetAxisRaw("Vertical");
+
+        if (moveX < 0)
+            spriteRenderer.flipX = true;   // 왼쪽 바라보기
+        else if (moveX > 0)
+            spriteRenderer.flipX = false;  // 오른쪽 바라보기
 
         Vector2 moveDirection = new Vector2(moveX, moveY).normalized;
         rb.linearVelocity = moveDirection * moveSpeed;
@@ -64,12 +69,23 @@ public class PlayerController : MonoBehaviour
         isInvincible = false; // 무적 끄기
     }
 
+    public GameOverUI gameOverUI;  // Inspector에서 GameOverCanvas 드래그
+
     void Die()
     {
         Debug.Log("GAME OVER");
-        Destroy(gameObject);
-        // 여기에 나중에 '게임오버 UI' 띄우는 코드 추가
+
+        // 움직임/공격 정지
+        enabled = false;
+        if (weapon) weapon.enabled = false;
+        rb.linearVelocity = Vector2.zero;
+
+        // UI 표시 (파괴 X)
+        if (gameOverUI) gameOverUI.Show();
+    
     }
+    // 여기에 나중에 '게임오버 UI' 띄우는 코드 추가
+
 
     // (아이템 효과 함수들은 그대로 둡니다)
     public void SpeedUp(float duration, float speedMultiplier)
@@ -83,6 +99,23 @@ public class PlayerController : MonoBehaviour
         moveSpeed *= speedMultiplier;
         yield return new WaitForSeconds(duration);
         moveSpeed = originalSpeed;
+    }
+
+    public void AttackSpeedUp(float duration, float multiplier)
+    {
+        StartCoroutine(AttackSpeedUpCoroutine(duration, multiplier));
+    }
+
+    private IEnumerator AttackSpeedUpCoroutine(float duration, float multiplier)
+    {
+        if (weapon == null) yield break;
+
+        float originalFireRate = weapon.fireRate;      // fireRate는 보통 공격 주기 (작을수록 빠름)
+        weapon.fireRate /= multiplier;                 // multiplier=5면 5배 빨라짐
+
+        yield return new WaitForSeconds(duration);
+
+        weapon.fireRate = originalFireRate;            // 원래 속도로 복구
     }
 
     public void AddProjectile()

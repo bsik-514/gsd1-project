@@ -1,0 +1,243 @@
+fileFormatVersion: 2
+guid: b2f24d6c8af44e74aaf35c25f11c764b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4537431472890165989
+    second: SMOB__0
+  - first:
+      213: -3202653395305071108
+    second: SMOB__1
+  - first:
+      213: 2902553406615775473
+    second: SMOB__2
+  - first:
+      213: 534891734348380425
+    second: SMOB__3
+  - first:
+      213: 1206676274525965882
+    second: SMOB__4
+  - first:
+      213: 2030589263691077499
+    second: SMOB__5
+  - first:
+      213: 1866104372949171879
+    second: SMOB__6
+  - first:
+      213: 1697193969682117336
+    second: SMOB__7
+  - first:
+      213: -7979150273690866995
+    second: SMOB__8
+  - first:
+      213: -2104741871643132943
+    second: SMOB__9
+  - first:
+      213: -7231567792429343394
+    second: SMOB__10
+  - first:
+      213: 871750727656609757
+    second: SMOB__11
+  - first:
+      213: 101149622151428493
+    second: SMOB__12
+  - first:
+      213: 395820262639333006
+    second: SMOB__13
+  - first:
+      213: -6547497268787908699
+    second: SMOB__14
+  - first:
+      213: 5741816386760507279
+    second: SMOB__15
+  - first:
+      213: -8020655158091943861
+    second: SMOB__16
+  - first:
+      213: -9192214987271304309
+    second: SMOB__17
+  - first:
+      213: 5807656424732391691
+    second: SMOB__18
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 700
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: SMOB__0
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 643
+        width: 729
+        height: 771
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5eabb4e52e138fe30800000000000000
+      internalID: 4537431472890165989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SMOB__20
+      rect:
+        serializedVersion: 2
+        x: 1161
+        y: 614
+        width: 734
+        height: 751
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1384649ad482336479b7be9e3a45367d
+      internalID: 1762998040
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 20948b36aaf519149848fce7b09a7f55
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceOnImport
+        value: False
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      SMOB__0: 4537431472890165989
+      SMOB__1: -3202653395305071108
+      SMOB__10: -7231567792429343394
+      SMOB__11: 871750727656609757
+      SMOB__12: 101149622151428493
+      SMOB__13: 395820262639333006
+      SMOB__14: -6547497268787908699
+      SMOB__15: 5741816386760507279
+      SMOB__16: -8020655158091943861
+      SMOB__17: -9192214987271304309
+      SMOB__18: 5807656424732391691
+      SMOB__19: -329533263
+      SMOB__2: 2902553406615775473
+      SMOB__20: 1762998040
+      SMOB__3: 534891734348380425
+      SMOB__4: 1206676274525965882
+      SMOB__5: 2030589263691077499
+      SMOB__6: 1866104372949171879
+      SMOB__7: 1697193969682117336
+      SMOB__8: -7979150273690866995
+      SMOB__9: -2104741871643132943
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

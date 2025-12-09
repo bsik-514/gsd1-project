@@ -18,7 +18,7 @@ public class Item : MonoBehaviour
     // (에너지 드링크용)
     public float speedBoostDuration = 5.0f; // 5초간
     public float speedMultiplier = 1.5f;    // 1.5배
-
+    public float attackspeedup = 5.0f;
     // (부러진 키보드용)
     public float freezeDuration = 4.0f; // 4초간 멈춤
 
@@ -38,6 +38,7 @@ public class Item : MonoBehaviour
                 case ItemType.EnergyDrink:
                     // '에너지 드링크'라면 플레이어의 SpeedUp 함수 호출
                     player.SpeedUp(speedBoostDuration, speedMultiplier);
+                    player.AttackSpeedUp(speedBoostDuration, attackspeedup); // 공속 버프 추가
                     break;
 
                 case ItemType.CheatSheet:
